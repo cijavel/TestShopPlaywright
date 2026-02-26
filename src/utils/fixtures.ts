@@ -1,6 +1,6 @@
 import { test as base, expect } from '@playwright/test';
-import { HomePage } from '../pages/HomePage';
-import { ShoppingCartPage } from '../pages/ShoppingCartPage';
+import { HomePage } from '../pages/HomePage.pom';
+import { ShoppingCartPage } from '../pages/ShoppingCartPage.pom';
 
 /**
  * Attach commonly used page objects to the standard Playwright test fixture.
