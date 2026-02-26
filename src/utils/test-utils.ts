@@ -31,13 +31,8 @@ export function defineTestSuites<T extends BaseTestParameters>(
   dataSets: Array<TestDataSet<T>>
 ) {
   dataSets.forEach((ds) => {
-    test.describe(`${meta.name} [${ds.environment}]`, () => {
-      ds.parameters.forEach((params, index) => {
-        const id = ds.uniqueID || `#${index + 1}`;
-        test.describe(id, () => {
-          testSteps(params as T);
-        });
-      });
+    ds.parameters.forEach((params) => {
+      testSteps(params as T);
     });
   });
 }

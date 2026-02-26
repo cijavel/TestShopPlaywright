@@ -16,10 +16,10 @@ import {
  * ----------------------------------------------------\
  */
 const META_DATA: TestMetadata = {
-  name: "'Homepage: add product to shopping cart",
+  name: "Homepage: add product to shopping cart",
   description: 'Add product to shopping cart on homepage',
   tags: ['@homepage', '@smoke'],
-  testCase: 'HP-ADD-001',
+  testCase: 'Homepage-addProductToCart',
 };
 
 /**
@@ -73,9 +73,7 @@ function testSteps(data: TestParameters): void {
       await test.step('Check that cart is empty', async () => {
         await homepage.checkThat.cartIsEmpty();
       });
-      await test.step(
-        `Add Product '${data.productName}' on homepage to cart`,
-        async () => {
+      await test.step(`Add Product '${data.productName}' on homepage to cart`,async () => {
           await homepage.actionTo.addProductToCart(data.productName);
         }
       );
@@ -83,20 +81,14 @@ function testSteps(data: TestParameters): void {
         await homepage.actionTo.goToCartViaAddProductToCart();
       });
 
-      await test.step(
-        `Change quantity of product '${data.productName}' to '${data.quantity}'`,
-        async () => {
-          await shoppingCart.actionTo.changeProductQuantityTo(
-            data.productName,
-            data.quantity
-          );
+      await test.step(`Change quantity of product '${data.productName}' to '${data.quantity}'`, async () => {
+          await shoppingCart.actionTo.changeProductQuantityTo(data.productName, data.quantity);
           await shoppingCart.actionTo.updateCart();
         }
       );
 
       await test.step(
-        `Verify total price of '${data.expectedTotalPrice}'`,
-        async () => {
+        `Verify total price of '${data.expectedTotalPrice}'`,async () => {
           await shoppingCart.checkThat.totalPriceIs(data.expectedTotalPrice);
           await shoppingCart.checkThat.compareTotalPriceWithCalculatedTotalPriceOfSubtotals();
         }
