@@ -10,6 +10,7 @@ const META_DATA: TestMetadata = {
   name: "'Homepage: add product to shopping cart",
   description: 'Add product to shopping cart on homepage',
   tags: ['@homepage', '@smoke'],
+  testCase: 'Homepage_AddToCart',
 };
 
 /**
@@ -32,7 +33,7 @@ interface TestParameters extends BaseTestParameters {
 const DATA_SETS: Array<TestDataSet<TestParameters>> = [
   {
     environment: Environment.QA,
-    uniqueID: META_DATA.name, // max 50 characters
+    uniqueID: '' + META_DATA.testCase, // max 50 characters
     parameters: [
       { shopHeading: 'Shop', productName: 'Album', quantity: 2, expectedTotalPrice: '30,00 €' },
     ],
@@ -52,33 +53,33 @@ function testSteps(data: TestParameters): void {
     });
 
     await test.step(`Check shop name '${data.shopHeading}'`, async () => {
-      await homepage.checkThatShopNameIs(data.shopHeading);
+      await homepage.checkThat.shopNameIs(data.shopHeading);
     });
 
     await test.step('Check that cart is empty', async () => {
-      await homepage.checkThatCartIsEmpty();
+      await homepage.checkThat.cartIsEmpty();
     });
 
     await test.step(`Add Product '${data.productName}' on homepage to cart`, async () => {
-      await homepage.addProductToCart(data.productName);
+      await homepage.actionTo.addProductToCart(data.productName);
     });
 
     await test.step('Go to cart via add product to cart', async () => {
-      await homepage.goToCartViaAddProductToCart();
+      await homepage.actionTo.goToCartViaAddProductToCart();
     });
 
     await test.step(`Change quantity of product '${data.productName}' to '${data.quantity}'`, async () => {
-      await shoppingCart.changeProductQuantityTo(data.productName, data.quantity);
-      await shoppingCart.updateCart();
+      await shoppingCart.actionTo.changeProductQuantityTo(data.productName, data.quantity);
+      await shoppingCart.actionTo.updateCart();
     });
 
     await test.step(`Verify total price of '${data.expectedTotalPrice}'`, async () => {
-      await shoppingCart.totalPriceIs(data.expectedTotalPrice);
-      await shoppingCart.compareTotalPriceWithCalculatedTotalPriceOfSubtotals();
+      await shoppingCart.checkThat.totalPriceIs(data.expectedTotalPrice);
+      await shoppingCart.checkThat.compareTotalPriceWithCalculatedTotalPriceOfSubtotals();
     });
 
     await test.step('Go to cart via the minicart', async () => {
-      await shoppingCart.emptyCart(); // clean up
+      await shoppingCart.actionTo.emptyCart(); // clean up
     });
   });
 }
