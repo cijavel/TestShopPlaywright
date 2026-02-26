@@ -1,5 +1,5 @@
 import { Page, expect } from '@playwright/test';
-import { parsePrice } from '../utils/test-utils';
+import { parsePrice } from '../utils/test-helpers';
 
 export class ShoppingCartPage {
   readonly page: Page;
