@@ -8,6 +8,7 @@ export class ShoppingCartPage {
   readonly subtotalPriceLocators;
   readonly cartItemRows;
   readonly removeButtons;
+  readonly cartEmptyMessage;
 
   constructor(page: Page) {
     this.page = page;
@@ -16,6 +17,7 @@ export class ShoppingCartPage {
     this.subtotalPriceLocators = page.locator('td.product-subtotal .woocommerce-Price-amount');
     this.cartItemRows = page.locator('tr.cart_item');
     this.removeButtons = page.locator('a.remove');
+    this.cartEmptyMessage = page.locator('div.cart-empty');
   }
 
   actionTo = {
@@ -29,9 +31,18 @@ export class ShoppingCartPage {
       await this.page.waitForLoadState('networkidle');
     },
     emptyCart: async () => {
+      // remove items by navigating to the remove link to avoid overlay/blockUI
       while ((await this.removeButtons.count()) > 0) {
-        await this.removeButtons.first().click();
-        await this.page.waitForLoadState('networkidle');
+        const first = this.removeButtons.first();
+        const href = await first.getAttribute('href');
+        if (href) {
+          await this.page.goto(href);
+          await this.page.waitForLoadState('networkidle');
+        } else {
+          // fallback to force click if no href
+          await first.click({ force: true });
+          await this.page.waitForLoadState('networkidle');
+        }
       }
     },
   };
@@ -39,6 +50,10 @@ export class ShoppingCartPage {
   checkThat = {
     totalPriceIs: async (expected: string) => {
       await expect(this.totalPriceLocator).toHaveText(expected);
+    },
+    cartIsEmptyMessageIsVisible: async () => {
+      await expect(this.cartEmptyMessage).toBeVisible();
+      await expect(this.cartEmptyMessage).toHaveText('Your cart is currently empty.');
     },
     compareTotalPriceWithCalculatedTotalPriceOfSubtotals: async () => {
       let sum = 0;
