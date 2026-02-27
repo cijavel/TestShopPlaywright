@@ -6,12 +6,16 @@ export class HomePage {
   readonly heading;
   readonly cartContents;
   readonly viewCartButton;
+  readonly productItems;
+  readonly addToCartButtons;
 
   constructor(page: Page) {
     this.page = page;
     this.heading = page.locator('h1.page-title, h1');
     this.cartContents = page.locator('a.cart-contents');
     this.viewCartButton = page.locator('a.added_to_cart.wc-forward');
+    this.productItems = page.locator('li.product');
+    this.addToCartButtons = page.locator('a.add_to_cart_button');
   }
 
   async goTo(env: Environment = Environment.QA) {
@@ -32,9 +36,9 @@ export class HomePage {
 
   actionTo = {
     addProductToCart: async (productName: string) => {
-      const btn = this.page.locator(
-        `li.product:has(h2:has-text("${productName}")) a.add_to_cart_button`
-      );
+      const btn = this.productItems
+        .filter({ hasText: productName })
+        .locator('a.add_to_cart_button');
       await expect(btn).toBeVisible();
       await btn.click();
       await expect(this.viewCartButton).toBeVisible({ timeout: 5_000 });
