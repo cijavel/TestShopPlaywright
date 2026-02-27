@@ -19,7 +19,7 @@ const META_DATA: TestMetadata = {
   name: "Homepage: add product to shopping cart",
   description: 'Add product to shopping cart on homepage',
   tags: ['@homepage', '@smoke'],
-  testCase: 'Homepage-addProductToCart',
+  testCase: 'Homepage-addSingleProductToCart',
 };
 
 /**
