@@ -44,15 +44,15 @@ const DATA_SETS: Array<TestDataSet<TestParameters>> = [
     environment: Environment.QA,
     uniqueID: "" + META_DATA.testCase,
     parameters: [
-      {
-        shopHeading: 'Shop',
-        productName: 'Album',
-        quantity: 2,
-        expectedTotalPrice: '30,00 €',
-      },
+      { shopHeading: 'Shop', quantity: 2, expectedTotalPrice: '30,00 €', productName: 'Album'},
+      { shopHeading: 'Shop', quantity: 1, expectedTotalPrice: '45,00 €', productName: 'Hoodie with Zipper'},
+      { shopHeading: 'Shop', quantity: 5, expectedTotalPrice: '80,00 €', productName: 'Cap' },
+      { shopHeading: 'Shop', quantity: 1, expectedTotalPrice: '55,00 €', productName: 'Belt'},
+      { shopHeading: 'Shop', quantity: 3, expectedTotalPrice: '135,00 €', productName: 'Hoodie with Logo'},
     ],
   },
 ];
+
 
 /**
  * ------------------------------------------------------------------\
