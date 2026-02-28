@@ -41,7 +41,7 @@ export class ShoppingCartPage {
           await this.page.goto(href);
           await this.page.waitForLoadState('networkidle');
         } else {
-          // fallback to force click if no href
+          // fallback
           await first.click({ force: true });
           await this.page.waitForLoadState('networkidle');
         }
