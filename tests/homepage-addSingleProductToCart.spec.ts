@@ -94,7 +94,7 @@ function testSteps(data: TestParameters): void {
         await shoppingCart.actionTo.emptyCart();
       });
 
-      await test.step('Verify cart empty message is shown', async () => {
+      await test.step('Tear Down:Verify cart empty message is shown', async () => {
         await shoppingCart.checkThat.cartIsEmptyMessageIsVisible();
       });
     }
