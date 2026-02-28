@@ -9,6 +9,7 @@ export class ShoppingCartPage {
   readonly cartItemRows;
   readonly removeButtons;
   readonly cartEmptyMessage;
+  readonly quantityInputLocator;
 
   constructor(page: Page) {
     this.page = page;
@@ -18,13 +19,14 @@ export class ShoppingCartPage {
     this.cartItemRows = page.locator('tr.cart_item');
     this.removeButtons = page.locator('a.remove');
     this.cartEmptyMessage = page.locator('div.cart-empty');
+    this.quantityInputLocator = 'input.qty';
   }
 
   actionTo = {
-    changeProductQuantityTo: async (productName: string, qty: number) => {
+    changeProductQuantityTo: async (productName: string, quantity: number) => {
       const row = this.cartItemRows.filter({ hasText: productName });
-      const input = row.locator('input.qty');
-      await input.fill(qty.toString());
+      const input = row.locator(this.quantityInputLocator);
+      await input.fill(quantity.toString());
     },
     updateCart: async () => {
       await this.updateCartButton.click();

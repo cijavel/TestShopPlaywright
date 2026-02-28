@@ -36,11 +36,11 @@ export class HomePage {
 
   actionTo = {
     addProductToCart: async (productName: string) => {
-      const btn = this.productItems
+      const addToCartButton = this.productItems
         .filter({ hasText: productName })
         .locator('a.add_to_cart_button');
-      await expect(btn).toBeVisible();
-      await btn.click();
+      await expect(addToCartButton).toBeVisible();
+      await addToCartButton.click();
       await expect(this.viewCartButton).toBeVisible({ timeout: 5_000 });
     },
     goToCartViaAddProductToCart: async () => {

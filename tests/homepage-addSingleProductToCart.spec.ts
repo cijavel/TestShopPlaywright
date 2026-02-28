@@ -75,8 +75,7 @@ function testSteps(data: TestParameters): void {
       });
       await test.step(`Add Product '${data.productName}' on homepage to cart`,async () => {
           await homepage.actionTo.addProductToCart(data.productName);
-        }
-      );
+      });
       await test.step('Go to cart via add product to cart', async () => {
         await homepage.actionTo.goToCartViaAddProductToCart();
       });
@@ -84,15 +83,12 @@ function testSteps(data: TestParameters): void {
       await test.step(`Change quantity of product '${data.productName}' to '${data.quantity}'`, async () => {
           await shoppingCart.actionTo.changeProductQuantityTo(data.productName, data.quantity);
           await shoppingCart.actionTo.updateCart();
-        }
-      );
+      });
 
-      await test.step(
-        `Verify total price of '${data.expectedTotalPrice}'`,async () => {
+      await test.step(`Verify total price of '${data.expectedTotalPrice}'`,async () => {
           await shoppingCart.checkThat.totalPriceIs(data.expectedTotalPrice);
           await shoppingCart.checkThat.compareTotalPriceWithCalculatedTotalPriceOfSubtotals();
-        }
-      );
+      });
 
       await test.step('Empty cart', async () => {
         await shoppingCart.actionTo.emptyCart();
@@ -101,7 +97,6 @@ function testSteps(data: TestParameters): void {
       await test.step('Verify cart empty message is shown', async () => {
         await shoppingCart.checkThat.cartIsEmptyMessageIsVisible();
       });
-
     }
   );
 }
