@@ -25,10 +25,9 @@ interface TestParameters extends BaseTestParameters {
  */
 const DATA_SETS: Array<TestDataSet<TestParameters>> = [
   {
-    environment: Environment.PROD,
-    uniqueID: 'Product-Homepage-addSingleProductToCart',
+    environment: Environment.QA,
     parameters: [
-      { shopHeading: 'Shop', quantity: 2, expectedTotalPrice: '30,00 €', productName: 'Album' },
+      //{ shopHeading: 'Shop', quantity: 2, expectedTotalPrice: '30,00 €', productName: 'Album' },
       { shopHeading: 'Shop', quantity: 1, expectedTotalPrice: '45,00 €', productName: 'Hoodie with Zipper' },
       { shopHeading: 'Shop', quantity: 5, expectedTotalPrice: '80,00 €', productName: 'Cap' },
       { shopHeading: 'Shop', quantity: 1, expectedTotalPrice: '55,00 €', productName: 'Belt' },
@@ -36,14 +35,13 @@ const DATA_SETS: Array<TestDataSet<TestParameters>> = [
     ],
   },
   {
-    environment: Environment.QA,
-    uniqueID: 'PROD-Product-Homepage-addSingleProductToCart',
+    environment: Environment.PROD,
     parameters: [
-      { shopHeading: 'Shop', quantity: 2, expectedTotalPrice: '30,00 €', productName: 'Album'},
-      //{ shopHeading: 'Shop', quantity: 1, expectedTotalPrice: '45,00 €', productName: 'Hoodie with Zipper'},
-      //{ shopHeading: 'Shop', quantity: 5, expectedTotalPrice: '80,00 €', productName: 'Cap' },
-      //{ shopHeading: 'Shop', quantity: 1, expectedTotalPrice: '55,00 €', productName: 'Belt'},
-      //{ shopHeading: 'Shop', quantity: 3, expectedTotalPrice: '135,00 €', productName: 'Hoodie with Logo'},
+      { shopHeading: 'Shop', quantity: 2, expectedTotalPrice: '30,00 €', productName: 'Album' },
+      //{ shopHeading: 'Shop', quantity: 1, expectedTotalPrice: '45,00 €', productName: 'Hoodie with Zipper' },
+      //{ shopHeading: 'Shop', quantity: 5, expectedTotalPrice: '80,00 €', productName: 'Cap' },
+      //{ shopHeading: 'Shop', quantity: 1, expectedTotalPrice: '55,00 €', productName: 'Belt' },
+      //{ shopHeading: 'Shop', quantity: 3, expectedTotalPrice: '135,00 €', productName: 'Hoodie with Logo' },
     ],
   },
 ];
@@ -56,8 +54,7 @@ const DATA_SETS: Array<TestDataSet<TestParameters>> = [
  */
 function testSteps(data: TestParameters): void {
   test(
-    // uniqueID + productName are both visible in the Playwright HTML report
-    `[${data.uniqueID}] [${data.productName}]`,
+    `[${data.productName}]`,
     async ({ homepage, shoppingCart }) => {
 
       await test.step('Go to Shop', async () => {

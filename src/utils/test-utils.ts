@@ -11,12 +11,10 @@ export interface BaseTestParameters {
   readonly quantity?: number;
   readonly expectedTotalPrice?: string;
   readonly environment?: Environment;
-  readonly uniqueID?: string;
 }
 
 export interface TestDataSet<T> {
   environment: Environment;
-  uniqueID: string;
   parameters: T[];
 }
 
@@ -26,12 +24,11 @@ export function defineTestSuites<T extends BaseTestParameters>(
 ) {
   dataSets.forEach((ds) => {
     ds.parameters.forEach((params) => {
-      const paramsWithMeta = {
+      const paramsWithEnv: T = {
         ...params,
         environment: ds.environment,
-        uniqueID: ds.uniqueID,
-      };
-      testSteps(paramsWithMeta as T);
+      } as T;
+      testSteps(paramsWithEnv);
     });
   });
 }
