@@ -1,12 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
-
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+import { Environment } from './src/utils/test-utils';
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -23,57 +16,51 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  /* Shared settings for all the projects below. */
   use: {
-    /* Base URL to use in actions like `await page.goto('')`. */
-    baseURL: 'https://autoprojekt.simplytest.de',
-
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+    /* Collect trace when retrying the failed test. */
     trace: 'on-first-retry',
   },
 
-  /* Configure projects for major browsers */
+  /* Configure projects per Browser AND Environment */
   projects: [
+    // --- QA ---
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: 'chromium | QA',
+      use: { ...devices['Desktop Chrome'], baseURL: Environment.QA },
+    },
+    {
+      name: 'firefox | QA',
+      use: { ...devices['Desktop Firefox'], baseURL: Environment.QA },
+    },
+    {
+      name: 'webkit | QA',
+      use: { ...devices['Desktop Safari'], baseURL: Environment.QA },
     },
 
+    // --- PROD ---
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      name: 'chromium | PROD',
+      use: { ...devices['Desktop Chrome'], baseURL: Environment.PROD },
+    },
+    {
+      name: 'firefox | PROD',
+      use: { ...devices['Desktop Firefox'], baseURL: Environment.PROD },
+    },
+    {
+      name: 'webkit | PROD',
+      use: { ...devices['Desktop Safari'], baseURL: Environment.PROD },
     },
 
+    /* Mobile viewports (optional – uncomment to enable)
     {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      name: 'Mobile Chrome | QA',
+      use: { ...devices['Pixel 5'], baseURL: Environment.QA },
     },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
+    {
+      name: 'Mobile Safari | QA',
+      use: { ...devices['iPhone 12'], baseURL: Environment.QA },
+    },
+    */
   ],
-
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
 });

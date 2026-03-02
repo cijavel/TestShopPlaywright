@@ -1,7 +1,8 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
 
 export enum Environment {
-  QA = 'https://autoprojekt.simplytest.de/',
+  QA   = 'https://autoprojekt.simplytest.de/',
+  PROD = 'https://autoprojekt.simplytest.de/',
 }
 
 export interface BaseTestParameters {
@@ -10,13 +11,7 @@ export interface BaseTestParameters {
   readonly quantity?: number;
   readonly expectedTotalPrice?: string;
   readonly environment?: Environment;
-}
-
-export interface TestMetadata {
-  name: string;
-  description: string;
-  tags: string[];
-  testCase?: string;
+  readonly uniqueID?: string;
 }
 
 export interface TestDataSet<T> {
@@ -27,12 +22,16 @@ export interface TestDataSet<T> {
 
 export function defineTestSuites<T extends BaseTestParameters>(
   testSteps: (data: T) => void,
-  meta: TestMetadata,
   dataSets: Array<TestDataSet<T>>
 ) {
   dataSets.forEach((ds) => {
     ds.parameters.forEach((params) => {
-      testSteps(params as T);
+      const paramsWithMeta = {
+        ...params,
+        environment: ds.environment,
+        uniqueID: ds.uniqueID,
+      };
+      testSteps(paramsWithMeta as T);
     });
   });
 }

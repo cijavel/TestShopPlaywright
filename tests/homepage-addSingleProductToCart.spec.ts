@@ -1,26 +1,10 @@
-import {
-  test,
-  expect,
-} from '../src/utils/fixtures';
+import { test, expect } from '../src/utils/fixtures';
 import {
   Environment,
-  TestMetadata,
   BaseTestParameters,
   TestDataSet,
   defineTestSuites,
 } from '../src/utils/test-utils';
-
-/**
- * ----------------------------------------------------\
- * Define the general information about the whole test.\
- * ----------------------------------------------------\
- */
-const META_DATA: TestMetadata = {
-  name: "Homepage: add product to shopping cart",
-  description: 'Add product to shopping cart on homepage',
-  tags: ['@homepage', '@smoke'],
-  testCase: 'Homepage-addSingleProductToCart',
-};
 
 /**
  * ---------------------------------------------------------------------------------\
@@ -41,8 +25,19 @@ interface TestParameters extends BaseTestParameters {
  */
 const DATA_SETS: Array<TestDataSet<TestParameters>> = [
   {
+    environment: Environment.PROD,
+    uniqueID: 'Product-Homepage-addSingleProductToCart',
+    parameters: [
+      { shopHeading: 'Shop', quantity: 2, expectedTotalPrice: '30,00 €', productName: 'Album' },
+      { shopHeading: 'Shop', quantity: 1, expectedTotalPrice: '45,00 €', productName: 'Hoodie with Zipper' },
+      { shopHeading: 'Shop', quantity: 5, expectedTotalPrice: '80,00 €', productName: 'Cap' },
+      { shopHeading: 'Shop', quantity: 1, expectedTotalPrice: '55,00 €', productName: 'Belt' },
+      { shopHeading: 'Shop', quantity: 3, expectedTotalPrice: '135,00 €', productName: 'Hoodie with Logo' },
+    ],
+  },
+  {
     environment: Environment.QA,
-    uniqueID: "" + META_DATA.testCase,
+    uniqueID: 'PROD-Product-Homepage-addSingleProductToCart',
     parameters: [
       { shopHeading: 'Shop', quantity: 2, expectedTotalPrice: '30,00 €', productName: 'Album'},
       //{ shopHeading: 'Shop', quantity: 1, expectedTotalPrice: '45,00 €', productName: 'Hoodie with Zipper'},
@@ -53,7 +48,6 @@ const DATA_SETS: Array<TestDataSet<TestParameters>> = [
   },
 ];
 
-
 /**
  * ------------------------------------------------------------------\
  * Define one or more {@link test()}s and their {@link test.step()}s.\
@@ -62,44 +56,50 @@ const DATA_SETS: Array<TestDataSet<TestParameters>> = [
  */
 function testSteps(data: TestParameters): void {
   test(
-    `[${data.productName}]`,
+    // uniqueID + productName are both visible in the Playwright HTML report
+    `[${data.uniqueID}] [${data.productName}]`,
     async ({ homepage, shoppingCart }) => {
+
       await test.step('Go to Shop', async () => {
-        await homepage.goTo();
+        await homepage.goTo(data.environment);
       });
+
       await test.step(`Check shop name '${data.shopHeading}'`, async () => {
         await homepage.checkThat.shopNameIs(data.shopHeading);
       });
+
       await test.step('Check that cart is empty', async () => {
         await homepage.checkThat.cartIsEmpty();
       });
-      await test.step(`Add Product '${data.productName}' on homepage to cart`,async () => {
-          await homepage.actionTo.addProductToCart(data.productName);
+
+      await test.step(`Add Product '${data.productName}' on homepage to cart`, async () => {
+        await homepage.actionTo.addProductToCart(data.productName);
       });
+
       await test.step('Go to cart via add product to cart', async () => {
         await homepage.actionTo.goToCartViaAddProductToCart();
       });
 
       await test.step(`Change quantity of product '${data.productName}' to '${data.quantity}'`, async () => {
-          await shoppingCart.actionTo.changeProductQuantityTo(data.productName, data.quantity);
-          await shoppingCart.actionTo.updateCart();
+        await shoppingCart.actionTo.changeProductQuantityTo(data.productName, data.quantity);
+        await shoppingCart.actionTo.updateCart();
       });
 
-      await test.step(`Verify total price of '${data.expectedTotalPrice}'`,async () => {
-          await shoppingCart.checkThat.totalPriceIs(data.expectedTotalPrice);
-          await shoppingCart.checkThat.compareTotalPriceWithCalculatedTotalPriceOfSubtotals();
+      await test.step(`Verify total price of '${data.expectedTotalPrice}'`, async () => {
+        await shoppingCart.checkThat.totalPriceIs(data.expectedTotalPrice);
+        await shoppingCart.checkThat.compareTotalPriceWithCalculatedTotalPriceOfSubtotals();
       });
 
       await test.step('Empty cart', async () => {
         await shoppingCart.actionTo.emptyCart();
       });
 
-      await test.step('Tear Down:Verify cart empty message is shown', async () => {
+      await test.step('Tear Down: Verify cart empty message is shown', async () => {
         await shoppingCart.checkThat.cartIsEmptyMessageIsVisible();
       });
     }
   );
 }
 
-/* Defines a test suite for each dataset.*/
-defineTestSuites(testSteps, META_DATA, DATA_SETS);
+/* Defines a test suite for each dataset. */
+defineTestSuites(testSteps, DATA_SETS);

@@ -33,7 +33,6 @@ export class ShoppingCartPage {
       await this.page.waitForLoadState('networkidle');
     },
     emptyCart: async () => {
-      // remove items by navigating to the remove link to avoid overlay/blockUI
       while ((await this.removeButtons.count()) > 0) {
         const first = this.removeButtons.first();
         const href = await first.getAttribute('href');

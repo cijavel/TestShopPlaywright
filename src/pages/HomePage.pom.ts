@@ -18,6 +18,10 @@ export class HomePage {
     this.addToCartButtonSelector = 'a.add_to_cart_button';
   }
 
+  /**
+   * Navigates to the given environment URL.
+   * Falls back to Environment.QA if no URL is provided.
+   */
   async goTo(env: Environment = Environment.QA) {
     await this.page.goto(env);
   }
