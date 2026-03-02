@@ -1,34 +1,34 @@
-import { expect } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
 export enum Environment {
-  QA   = 'https://autoprojekt.simplytest.de/',
-  PROD = 'https://autoprojekt.simplytest.de/',
+  QA   = 'QA',
 }
 
+export const EnvironmentUrls: Record<Environment, string> = {
+  [Environment.QA]:   'https://autoprojekt.simplytest.de/',
+};
+
 export interface BaseTestParameters {
-  readonly shopHeading?: string;
-  readonly productName?: string;
-  readonly quantity?: number;
-  readonly expectedTotalPrice?: string;
   readonly environment?: Environment;
 }
 
-export interface TestDataSet<T> {
+export interface TestDataSet<T extends BaseTestParameters> {
   environment: Environment;
   parameters: T[];
 }
 
 export function defineTestSuites<T extends BaseTestParameters>(
-  testSteps: (data: T) => void,
+  testSteps: (data: T, envLabel: string) => void,
   dataSets: Array<TestDataSet<T>>
 ) {
   dataSets.forEach((ds) => {
+    const envLabel: string = ds.environment;
     ds.parameters.forEach((params) => {
       const paramsWithEnv: T = {
         ...params,
         environment: ds.environment,
       } as T;
-      testSteps(paramsWithEnv);
+      testSteps(paramsWithEnv, envLabel);
     });
   });
 }

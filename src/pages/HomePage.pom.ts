@@ -1,5 +1,5 @@
 import { Page, expect } from '@playwright/test';
-import { Environment } from '../utils/test-utils';
+import { Environment, EnvironmentUrls } from '../utils/test-utils';
 
 export class HomePage {
   readonly page: Page;
@@ -18,19 +18,17 @@ export class HomePage {
     this.addToCartButtonSelector = 'a.add_to_cart_button';
   }
 
-  /**
-   * Navigates to the given environment URL.
-   * Falls back to Environment.QA if no URL is provided.
-   */
   async goTo(env: Environment = Environment.QA) {
-    await this.page.goto(env);
+    await this.page.goto(EnvironmentUrls[env]);
   }
 
   checkThat = {
+    
     shopNameIs: async (expected: string) => {
       await expect(this.heading).toBeVisible();
       await expect(this.heading).toHaveText(expected);
     },
+
     cartIsEmpty: async () => {
       await expect(this.cartContents).toBeVisible();
       const txt = await this.cartContents.textContent();
@@ -39,6 +37,7 @@ export class HomePage {
   };
 
   actionTo = {
+
     addProductToCart: async (productName: string) => {
       const addToCartButton = this.productItems
         .filter({ hasText: productName })
@@ -47,6 +46,7 @@ export class HomePage {
       await addToCartButton.click();
       await expect(this.viewCartButton).toBeVisible({ timeout: 5_000 });
     },
+
     goToCartViaAddProductToCart: async () => {
       await this.viewCartButton.click();
       await this.page.waitForURL(/\/cart\/?/);

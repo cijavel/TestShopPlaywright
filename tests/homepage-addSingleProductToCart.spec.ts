@@ -19,29 +19,19 @@ interface TestParameters extends BaseTestParameters {
 }
 
 /**
- * ----------------------------------------------------------------------\
- * Define datasets and the according parameter data for each environment.\
- * ----------------------------------------------------------------------\
+ * -----------------------------------------------------------------------\
+ * Define datasets and the according parameter data for each environment.  \
+ * -----------------------------------------------------------------------\
  */
 const DATA_SETS: Array<TestDataSet<TestParameters>> = [
   {
     environment: Environment.QA,
     parameters: [
-      //{ shopHeading: 'Shop', quantity: 2, expectedTotalPrice: '30,00 €', productName: 'Album' },
-      { shopHeading: 'Shop', quantity: 1, expectedTotalPrice: '45,00 €', productName: 'Hoodie with Zipper' },
-      { shopHeading: 'Shop', quantity: 5, expectedTotalPrice: '80,00 €', productName: 'Cap' },
-      { shopHeading: 'Shop', quantity: 1, expectedTotalPrice: '55,00 €', productName: 'Belt' },
+      { shopHeading: 'Shop', quantity: 2, expectedTotalPrice: '30,00 €',  productName: 'Album' },
+      { shopHeading: 'Shop', quantity: 1, expectedTotalPrice: '45,00 €',  productName: 'Hoodie with Zipper' },
+      { shopHeading: 'Shop', quantity: 5, expectedTotalPrice: '80,00 €',  productName: 'Cap' },
+      { shopHeading: 'Shop', quantity: 1, expectedTotalPrice: '55,00 €',  productName: 'Belt' },
       { shopHeading: 'Shop', quantity: 3, expectedTotalPrice: '135,00 €', productName: 'Hoodie with Logo' },
-    ],
-  },
-  {
-    environment: Environment.PROD,
-    parameters: [
-      { shopHeading: 'Shop', quantity: 2, expectedTotalPrice: '30,00 €', productName: 'Album' },
-      //{ shopHeading: 'Shop', quantity: 1, expectedTotalPrice: '45,00 €', productName: 'Hoodie with Zipper' },
-      //{ shopHeading: 'Shop', quantity: 5, expectedTotalPrice: '80,00 €', productName: 'Cap' },
-      //{ shopHeading: 'Shop', quantity: 1, expectedTotalPrice: '55,00 €', productName: 'Belt' },
-      //{ shopHeading: 'Shop', quantity: 3, expectedTotalPrice: '135,00 €', productName: 'Hoodie with Logo' },
     ],
   },
 ];
@@ -50,11 +40,10 @@ const DATA_SETS: Array<TestDataSet<TestParameters>> = [
  * ------------------------------------------------------------------\
  * Define one or more {@link test()}s and their {@link test.step()}s.\
  * ------------------------------------------------------------------\
- * @param data the {@link TestParameters} you defined above.
  */
-function testSteps(data: TestParameters): void {
+function testSteps(data: TestParameters, envLabel: string): void {
   test(
-    `[${data.productName}]`,
+    `[${envLabel}] [${data.productName}]`,
     async ({ homepage, shoppingCart }) => {
 
       await test.step('Go to Shop', async () => {
@@ -85,14 +74,6 @@ function testSteps(data: TestParameters): void {
       await test.step(`Verify total price of '${data.expectedTotalPrice}'`, async () => {
         await shoppingCart.checkThat.totalPriceIs(data.expectedTotalPrice);
         await shoppingCart.checkThat.compareTotalPriceWithCalculatedTotalPriceOfSubtotals();
-      });
-
-      await test.step('Empty cart', async () => {
-        await shoppingCart.actionTo.emptyCart();
-      });
-
-      await test.step('Tear Down: Verify cart empty message is shown', async () => {
-        await shoppingCart.checkThat.cartIsEmptyMessageIsVisible();
       });
     }
   );

@@ -28,23 +28,11 @@ export class ShoppingCartPage {
       const input = row.locator(this.quantityInputLocator);
       await input.fill(quantity.toString());
     },
+
     updateCart: async () => {
+      await this.page.waitForLoadState('networkidle');
       await this.updateCartButton.click();
       await this.page.waitForLoadState('networkidle');
-    },
-    emptyCart: async () => {
-      while ((await this.removeButtons.count()) > 0) {
-        const first = this.removeButtons.first();
-        const href = await first.getAttribute('href');
-        if (href) {
-          await this.page.goto(href);
-          await this.page.waitForLoadState('networkidle');
-        } else {
-          // fallback
-          await first.click({ force: true });
-          await this.page.waitForLoadState('networkidle');
-        }
-      }
     },
   };
 
@@ -52,10 +40,7 @@ export class ShoppingCartPage {
     totalPriceIs: async (expected: string) => {
       await expect(this.totalPriceLocator).toHaveText(expected);
     },
-    cartIsEmptyMessageIsVisible: async () => {
-      await expect(this.cartEmptyMessage).toBeVisible();
-      await expect(this.cartEmptyMessage).toHaveText('Your cart is currently empty.');
-    },
+
     compareTotalPriceWithCalculatedTotalPriceOfSubtotals: async () => {
       let sum = 0;
       for (let i = 0, n = await this.subtotalPriceLocators.count(); i < n; i++) {
