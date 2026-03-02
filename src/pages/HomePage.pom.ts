@@ -23,7 +23,7 @@ export class HomePage {
   }
 
   checkThat = {
-    
+
     shopNameIs: async (expected: string) => {
       await expect(this.heading).toBeVisible();
       await expect(this.heading).toHaveText(expected);
@@ -31,8 +31,8 @@ export class HomePage {
 
     cartIsEmpty: async () => {
       await expect(this.cartContents).toBeVisible();
-      const txt = await this.cartContents.textContent();
-      expect(txt).toMatch(/0/);
+      const cartText = await this.cartContents.textContent();
+      expect(cartText).toMatch(/0/);
     },
   };
 

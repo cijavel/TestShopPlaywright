@@ -43,13 +43,13 @@ export class ShoppingCartPage {
 
     compareTotalPriceWithCalculatedTotalPriceOfSubtotals: async () => {
       let sum = 0;
-      for (let i = 0, n = await this.subtotalPriceLocators.count(); i < n; i++) {
-        const t = await this.subtotalPriceLocators.nth(i).textContent();
-        if (t) sum += parsePrice(t);
+      for (let index = 0, count = await this.subtotalPriceLocators.count(); index < count; index++) {
+        const subtotalText = await this.subtotalPriceLocators.nth(index).textContent();
+        if (subtotalText) sum += parsePrice(subtotalText);
       }
-      const totTxt = (await this.totalPriceLocator.textContent()) ?? '0';
-      const tot = parsePrice(totTxt);
-      expect(sum).toBeCloseTo(tot, 2);
+      const totalPriceText = (await this.totalPriceLocator.textContent()) ?? '0';
+      const totalPrice  = parsePrice(totalPriceText);
+      expect(sum).toBeCloseTo(totalPrice, 2);
     },
   };
 }
