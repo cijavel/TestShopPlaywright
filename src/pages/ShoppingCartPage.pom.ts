@@ -1,55 +1,103 @@
-import { Page, expect } from '@playwright/test';
+import { Page, Locator, expect } from '@playwright/test';
 import { parsePrice } from '../utils/test-helpers';
 
 export class ShoppingCartPage {
   readonly page: Page;
-  readonly updateCartButton;
-  readonly totalPriceLocator;
-  readonly subtotalPriceLocators;
-  readonly cartItemRows;
-  readonly removeButtons;
-  readonly cartEmptyMessage;
-  readonly quantityInputLocator;
+
+  readonly productLocators: {
+    cartItemRows:    Locator;
+    removeButtons:   Locator;
+    quantityInput:   string;
+  };
+
+  readonly priceLocators: {
+    totalPrice:      Locator;
+    subtotalPrices:  Locator;
+  };
+
+  readonly cartLocators: {
+    updateCartButton: Locator;
+  };
+
+  readonly statusLocators: {
+    cartEmptyMessage: Locator;
+  };
 
   constructor(page: Page) {
     this.page = page;
-    this.updateCartButton = page.locator('button[name="update_cart"]');
-    this.totalPriceLocator = page.locator('.order-total .amount');
-    this.subtotalPriceLocators = page.locator('td.product-subtotal .woocommerce-Price-amount');
-    this.cartItemRows = page.locator('tr.cart_item');
-    this.removeButtons = page.locator('a.remove');
-    this.cartEmptyMessage = page.locator('div.cart-empty');
-    this.quantityInputLocator = 'input.qty';
+
+    this.productLocators = {
+      cartItemRows:     page.locator('tr.cart_item'),
+      removeButtons:    page.locator('a.remove'),
+      quantityInput:    'input.qty',
+    };
+
+    this.priceLocators = {
+      totalPrice:       page.locator('.order-total .amount'),
+      subtotalPrices:   page.locator('td.product-subtotal .woocommerce-Price-amount'),
+    };
+
+    this.cartLocators = {
+      updateCartButton: page.locator('button[name="update_cart"]'),
+    };
+
+    this.statusLocators = {
+      cartEmptyMessage: page.locator('div.cart-empty'),
+    };
   }
 
   actionTo = {
     changeProductQuantityTo: async (productName: string, quantity: number) => {
-      const row = this.cartItemRows.filter({ hasText: productName });
-      const input = row.locator(this.quantityInputLocator);
-      await input.fill(quantity.toString());
+      const productRow    = this.productLocators.cartItemRows.filter({ hasText: productName });
+      const quantityInput = productRow.locator(this.productLocators.quantityInput);
+      await quantityInput.fill(quantity.toString());
     },
 
     updateCart: async () => {
       await this.page.waitForLoadState('networkidle');
-      await this.updateCartButton.click();
+      await this.cartLocators.updateCartButton.click();
       await this.page.waitForLoadState('networkidle');
+    },
+
+    emptyCart: async () => {
+      await this.page.waitForLoadState('networkidle');
+
+      while ((await this.productLocators.removeButtons.count()) > 0) {
+        const firstRemoveButton = this.productLocators.removeButtons.first();
+        await firstRemoveButton.waitFor({ state: 'visible' });
+        const removeUrl = await firstRemoveButton.getAttribute('href');
+
+        if (!removeUrl) throw new Error('Remove button has no href – check locator or page state');
+
+        await this.page.goto(removeUrl);
+        await this.page.waitForLoadState('networkidle');
+      }
     },
   };
 
   checkThat = {
-    totalPriceIs: async (expected: string) => {
-      await expect(this.totalPriceLocator).toHaveText(expected);
+    totalPriceIs: async (expectedTotalPrice: string) => {
+      await expect(this.priceLocators.totalPrice).toHaveText(expectedTotalPrice);
+    },
+
+    cartIsEmptyMessageIsVisible: async () => {
+      await expect(this.statusLocators.cartEmptyMessage).toBeVisible();
+      await expect(this.statusLocators.cartEmptyMessage).toHaveText('Your cart is currently empty.');
     },
 
     compareTotalPriceWithCalculatedTotalPriceOfSubtotals: async () => {
-      let sum = 0;
-      for (let index = 0, count = await this.subtotalPriceLocators.count(); index < count; index++) {
-        const subtotalText = await this.subtotalPriceLocators.nth(index).textContent();
-        if (subtotalText) sum += parsePrice(subtotalText);
+      let subtotalSum = 0;
+      const subtotalCount = await this.priceLocators.subtotalPrices.count();
+
+      for (let index = 0; index < subtotalCount; index++) {
+        const subtotalText = await this.priceLocators.subtotalPrices.nth(index).textContent();
+        if (subtotalText) subtotalSum += parsePrice(subtotalText);
       }
-      const totalPriceText = (await this.totalPriceLocator.textContent()) ?? '0';
-      const totalPrice  = parsePrice(totalPriceText);
-      expect(sum).toBeCloseTo(totalPrice, 2);
+
+      const totalPriceText = (await this.priceLocators.totalPrice.textContent()) ?? '0';
+      const totalPrice     = parsePrice(totalPriceText);
+
+      expect(subtotalSum).toBeCloseTo(totalPrice, 2);
     },
   };
 }
