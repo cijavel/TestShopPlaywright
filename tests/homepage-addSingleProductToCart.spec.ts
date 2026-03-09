@@ -34,6 +34,12 @@ const DATA_SETS: Array<TestDataSet<TestParameters>> = [
       { shopHeading: 'Shop', quantity: 3, expectedTotalPrice: '135,00 €', productName: 'Hoodie with Logo' },
     ],
   },
+  {
+    environment: Environment.PROD,
+    parameters: [
+      { shopHeading: 'Shop', quantity: 1, expectedTotalPrice: '15,00 €',  productName: 'Album' },
+    ],
+  },
 ];
 
 /**

@@ -2,10 +2,12 @@ import { test, expect } from '@playwright/test';
 
 export enum Environment {
   QA   = 'QA',
+  PROD   = 'PROD',
 }
 
 export const EnvironmentUrls: Record<Environment, string> = {
   [Environment.QA]:   'https://autoprojekt.simplytest.de/',
+  [Environment.PROD]: 'http://autoprojekt.simplytest.de/',
 };
 
 export interface BaseTestParameters {
