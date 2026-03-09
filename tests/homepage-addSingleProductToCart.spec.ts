@@ -47,9 +47,9 @@ const DATA_SETS: Array<TestDataSet<TestParameters>> = [
  * Define one or more {@link test()}s and their {@link test.step()}s.\
  * ------------------------------------------------------------------\
  */
-function testSteps(data: TestParameters, envLabel: string): void {
+function testSteps(data: TestParameters): void {
   test(
-    `[${envLabel}] [${data.productName}]`,
+    `[${data.productName}]`,
     async ({ homepage, shoppingCart }) => {
 
       await test.step('Go to Shop', async () => {
