@@ -1,4 +1,4 @@
-import { test, expect } from '../src/utils/fixtures';
+import { test } from '../src/utils/fixtures';
 import {
   Environment,
   BaseTestParameters,
@@ -12,23 +12,22 @@ import {
  * ---------------------------------------------------------------------------------\
  */
 interface TestParameters extends BaseTestParameters {
-  readonly productName: string;
+  readonly productName:        string;
+  readonly expectedPrice:      string;
 }
 
 /**
- * -----------------------------------------------------------------------\
- * Define datasets and the according parameter data for each environment.  \
- * -----------------------------------------------------------------------\
+ * ----------------------------------------------------------------------\
+ * Define datasets and the according parameter data for each environment.\
+ * ----------------------------------------------------------------------\
  */
 const DATA_SETS: Array<TestDataSet<TestParameters>> = [
   {
     environment: Environment.QA,
     parameters: [
-      { productName: 'Album' },
-      { productName: 'Hoodie with Zipper' },
-      { productName: 'Cap' },
-      { productName: 'Belt' },
-      { productName: 'Hoodie with Logo' },
+      { productName: 'Album',             expectedPrice: '15,00 €' },
+      { productName: 'Hoodie with Zipper', expectedPrice: '45,00 €' },
+      { productName: 'Cap',               expectedPrice: '16,00 €' },
     ],
   },
 ];
@@ -41,13 +40,38 @@ const DATA_SETS: Array<TestDataSet<TestParameters>> = [
 function testSteps(data: TestParameters): void {
   test(
     `[${data.productName}]`,
-    async ({ homepage, shoppingCart }) => {
+    async ({ homepage, productDetailPage }) => {
 
       await test.step('Go to Shop', async () => {
         await homepage.goTo(data.environment);
       });
-      await test.step(`Search for Product '${data.productName}' `, async () => {
+
+      await test.step(`Search for Product '${data.productName}'`, async () => {
         await homepage.actionTo.searchForProduct(data.productName);
+      });
+
+      await test.step(`Verify on Product Detail Page for '${data.productName}'`, async () => {
+        await productDetailPage.checkThat.isOnProductDetailPage();
+      });
+
+      await test.step(`Verify product title is '${data.productName}'`, async () => {
+        await productDetailPage.checkThat.productTitleIs(data.productName);
+      });
+
+      await test.step(`Verify product price is '${data.expectedPrice}'`, async () => {
+        await productDetailPage.checkThat.productPriceIs(data.expectedPrice);
+      });
+
+      await test.step('Verify short description is visible', async () => {
+        await productDetailPage.checkThat.shortDescriptionIsVisible();
+      });
+
+      await test.step('Verify long description is visible', async () => {
+        await productDetailPage.checkThat.longDescriptionIsVisible();
+      });
+
+      await test.step('Verify product image is visible', async () => {
+        await productDetailPage.checkThat.productImageIsVisible();
       });
     }
   );

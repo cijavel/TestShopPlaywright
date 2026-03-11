@@ -5,7 +5,7 @@ export class HomePage {
   readonly page: Page;
 
 
-  readonly locators:   { 
+  readonly homepage:   { 
     heading: Locator;
   };
 
@@ -28,7 +28,7 @@ export class HomePage {
   constructor(page: Page) {
     this.page = page;
 
-    this.locators = {
+    this.homepage = {
       heading: page.locator('h1.page-title, h1'),
     };
 
@@ -55,8 +55,8 @@ export class HomePage {
 
   checkThat = {
     shopNameIs: async (expectedShopHeading: string) => {
-      await expect(this.locators.heading).toBeVisible();
-      await expect(this.locators.heading).toHaveText(expectedShopHeading);
+      await expect(this.homepage.heading).toBeVisible();
+      await expect(this.homepage.heading).toHaveText(expectedShopHeading);
     },
 
     cartIsEmpty: async () => {
